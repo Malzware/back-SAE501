@@ -15,7 +15,7 @@ class CreatePdfsTable extends Migration
     {
         Schema::create('pdfs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('user_websites'); // Changé ici
+            $table->foreignId('user_id');
             $table->string('pdf_name');
             $table->string('pdf_path');
             $table->string('pdf_token');
