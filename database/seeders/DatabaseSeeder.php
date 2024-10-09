@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             GivenHoursSeeder::class,
             PdfSeeder::class,
             RoleUserSeeder::class,
-            // Ajoutez d'autres seeders ici si nécessaire
         ]);
     }
 }

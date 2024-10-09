@@ -12,8 +12,7 @@ class SemesterSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Créer 5 semestres
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 6; $i++) {
             Semester::create([
                 'name' => $faker->word(),
                 'career' => $faker->word(),
