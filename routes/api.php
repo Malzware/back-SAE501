@@ -50,13 +50,3 @@ Route::delete('/roles/{id}', [RoleController::class, 'destroy']); // Supprimer u
 
 Route::get('/pdfs', [PdfController::class, 'index']); // Afficher tous les PDF
 Route::get('/pdfs/{id}', [PdfController::class, 'show']); // Afficher un PDF spécifique
-
-Route::get('/pdf', function () {
-    $pdf = PDF::loadView('invoice', $data);
-    return $pdf->download('invoice.pdf');
-});
-Route::get('/pdf', function () {
-    $pdf = PDF::loadView('invoice', $data);
-    //return $pdf->save('/path-to/my_stored_file.pdf')->stream('invoice.pdf');
-    return $pdf->download('invoice.pdf');
-});
