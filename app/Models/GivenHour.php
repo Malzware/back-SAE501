@@ -7,14 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class GivenHour extends Model
 {
     protected $fillable = [
-        'resource_id', 'user_id', 'hours_cm', 'hours_td', 'hours_tp', 'comment'
+        'hours_cm', 'hours_td', 'hours_tp', 'comment', 'resource_id'
     ];
-
-    // Relation avec User
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     // Relation avec Resource
     public function resource()

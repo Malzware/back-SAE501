@@ -12,7 +12,7 @@ class CreateRoleUserTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('role_id')->constrained()->onDelete('cascade');
-            $table->foreignId('resource_id')->constrained()->onDelete('cascade');
+            $table->foreignId('resource_id')->nullable()->constrained()->onDelete('cascade'); // Add this line
             $table->timestamps();
         });
     }
@@ -22,3 +22,4 @@ class CreateRoleUserTable extends Migration
         Schema::dropIfExists('role_user');
     }
 }
+
