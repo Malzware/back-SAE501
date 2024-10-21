@@ -21,16 +21,13 @@
     <div>
     <form action="/pdf" method="POST">
     @csrf
-        <label for="name">FirstName:</label>
-        <input type="text" id="firstname" name="firstname" required>
-
-        <label for="name">LastName:</label>
-        <input type="text" id="lastname" name="lastname" required>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        
-        <button type="submit">Download PDF</button>
+    <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            @error('email')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
     </form>
 </div>
   
