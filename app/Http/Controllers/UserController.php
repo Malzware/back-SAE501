@@ -4,104 +4,75 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response; // Ajout de l'importation pour Response
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     /**
-     * Affiche une liste des utilisateurs.
+     * Affiche toutes les utilisateurs.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
+    public function index2(): \Illuminate\Contracts\View\View|Response
+    {
+        $successMessage = session('success'); 
+        echo "blah".$successMessage."blih";
+        $users = User::all(); // Récupère tous les utilisateurs
+        return view('users.index', compact('users')); // Affiche la vue avec les utilisateurs
+    }
     public function index()
     {
-        $users = User::all();  // Récupère tous les utilisateurs
-        return response()->json($users);  // Retourne les utilisateurs au format JSON
+        $successMessage = session('success'); 
+        // Récupère toutes les ressources avec la relation vers le semestre
+        $resources = User::all();
+        echo "blah".$successMessage."blih";
+        // Retourne les données à une vue ou une réponse JSON
+        return response()->json($resources);
     }
 
     /**
-     * Crée un nouvel utilisateur.
+     * Affiche le formulaire de création d'un utilisateur.
+     *
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
+     */
+    public function create(): \Illuminate\Contracts\View\View|Response
+    {
+        return view('users.create'); // Affiche le formulaire de création
+    }
+
+
+    public function show($id)
+    {
+        // Récupère la ressource spécifique avec la relation vers le semestre
+       
+        $users = User::all(); // Récupère tous les utilisateurs
+        // Retourne les données à une vue ou une réponse JSON
+        return response()->json($users);
+    }
+
+    /**
+     * Gère la soumission du formulaire pour ajouter un nouvel utilisateur.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        // Valider les données
+        // Validation des données
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
-        // Créer un nouvel utilisateur
-        $user = User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-        ]);
+        // Création de l'utilisateur dans la base de données
+      //  $validatedData['password'] = bcrypt($validatedData['password']); // Hachage du mot de passe
+        User::create($validatedData);
 
-        return response()->json($user, 201);  // Retourne l'utilisateur créé
-    }
-
-    /**
-     * Affiche un utilisateur spécifique.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $user = User::find($id);
-
-        if ($user) {
-            return response()->json($user);
-        } else {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-    }
-
-    /**
-     * Met à jour un utilisateur existant.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        // Valider les données
-        $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'sometimes|string|min:8',
-        ]);
-
-        $user = User::find($id);
-
-        if ($user) {
-            // Mettre à jour les informations de l'utilisateur
-            $user->update($validatedData);
-            return response()->json($user);
-        } else {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
-    }
-
-    /**
-     * Supprime un utilisateur existant.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        $user = User::find($id);
-
-        if ($user) {
-            $user->delete();
-            return response()->json(['message' => 'Utilisateur supprimé']);
-        } else {
-            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
-        }
+        // Redirection avec un message de succès
+        return redirect('/users')->with('success', 'Utilisateur avec succès');
     }
 }

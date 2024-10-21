@@ -13,16 +13,12 @@ use App\Http\Controllers\PdfController;
 Route::get('/', function () {
     return view('welcome');
 });
-
 Route::get('/resources', [ResourceController::class, 'index']);
 Route::get('/resources/{id}', [ResourceController::class, 'show']);
 
-
-Route::get('/users', [UserController::class, 'index']);  // Afficher tous les utilisateurs
-Route::post('/users', [UserController::class, 'store']);  // Créer un utilisateur
-Route::get('/users/{id}', [UserController::class, 'show']);  // Afficher un utilisateur spécifique
-Route::put('/users/{id}', [UserController::class, 'update']);  // Mettre à jour un utilisateur
-Route::delete('/users/{id}', [UserController::class, 'destroy']); 
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users', [UserController::class, 'index']); // Affiche tous les utilisateurs
+Route::get('/users/{id}', [UserController::class, 'show']);
 
 Route::get('/given-hours', [GivenHoursController::class, 'index']); // Afficher toutes les heures données
 Route::post('/given-hours', [GivenHoursController::class, 'store']); // Créer une nouvelle entrée d'heures données
