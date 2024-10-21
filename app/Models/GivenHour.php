@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class GivenHour extends Model
 {
     protected $fillable = [
-        'hours_cm', 'hours_td', 'hours_tp', 'comment', 'resource_id'
+        'hours_cm', 'hours_td', 'hours_tp', 'resource_id'
     ];
 
     // Relation avec Resource

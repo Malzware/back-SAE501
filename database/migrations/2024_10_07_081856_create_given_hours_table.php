@@ -19,7 +19,6 @@ class CreateGivenHoursTable extends Migration
             $table->integer('hours_cm')->nullable();
             $table->integer('hours_td')->nullable();
             $table->integer('hours_tp')->nullable();
-            $table->string('comment')->nullable();
             $table->timestamps();
         });
     }

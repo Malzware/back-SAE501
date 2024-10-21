@@ -23,7 +23,6 @@ class GivenHoursSeeder extends Seeder
                 'hours_cm' => rand(1, 10),      // Cours magistraux (entre 1 et 10 heures)
                 'hours_td' => rand(1, 10),      // Travaux dirigés (entre 1 et 10 heures)
                 'hours_tp' => rand(1, 10),      // Travaux pratiques (entre 1 et 10 heures)
-                'comment' => $faker->sentence,  // Commentaire généré aléatoirement
             ]);
         }
     }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Resource extends Model
 {
     protected $fillable = [
-        'name', 'resource_code', 'title', 'id_semester', 'cm', 'td', 'tp',
+        'name', 'resource_code', 'title', 'id_semester',
         'national_total', 'national_tp', 'adapt', 'adapt_tp', 'projet_ne', 'projet_e', 'comment'
     ];
 

@@ -19,9 +19,6 @@ class CreateResourcesTable extends Migration
             $table->string('resource_code');
             $table->string('title');
             $table->foreignId('id_semester')->constrained('semesters');
-            $table->integer('cm')->nullable();
-            $table->integer('td')->nullable();
-            $table->integer('tp')->nullable();
             $table->integer('national_total')->nullable();
             $table->integer('national_tp')->nullable();
             $table->integer('adapt')->nullable();
