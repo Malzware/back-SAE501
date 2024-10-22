@@ -82,7 +82,7 @@ Route::post('/pdf', function(Request $request) {
         ];
 
         // For debugging - remove this in production
-        dd($data);
+        // dd($data);
 
         // Generate PDF token
         $pdfToken = \Str::random(32);
@@ -96,9 +96,10 @@ Route::post('/pdf', function(Request $request) {
         ]);
 
         // Load and generate PDF
-        $pdf = PDF::loadView('teaching-report', $data);
+        $pdf = PDF::loadView('test', $data);
         
-        return $pdf->download('Teaching_Report_' . $user->lastname . '_' . date('Y-m-d') . '.pdf');
+        return $pdf->stream('test' . $user->lastname . '_' . date('Y-m-d') . '.pdf');
+        //return $pdf->download('Teaching_Report_' . $user->lastname . '_' . date('Y-m-d') . '.pdf');
     } catch (\Exception $e) {
         \Log::error('PDF Generation Error: ' . $e->getMessage());
         return back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
