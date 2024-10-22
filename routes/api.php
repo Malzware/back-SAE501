@@ -13,12 +13,23 @@ use App\Http\Controllers\PdfController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/resources', [ResourceController::class, 'index']);
-Route::get('/resources/{id}', [ResourceController::class, 'show']);
 
-Route::post('/users', [UserController::class, 'store'])->name('users.store');
-Route::get('/users', [UserController::class, 'index']); // Affiche tous les utilisateurs
-Route::get('/users/{id}', [UserController::class, 'show']);
+Route::prefix('resources')->group(function () {
+    Route::get('/', [ResourceController::class, 'index'])->name('resources.index');
+    Route::post('/', [ResourceController::class, 'store'])->name('resources.store');
+    Route::get('/{id}', [ResourceController::class, 'show'])->name('resources.show');
+    Route::put('/{id}', [ResourceController::class, 'update'])->name('resources.update'); // Assurez-vous que c'est 'update', pas 'updatePost'
+    Route::delete('/{id}', [ResourceController::class, 'destroy'])->name('resources.destroy');
+});
+
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('/{id}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
+
 
 Route::get('/given-hours', [GivenHoursController::class, 'index']); // Afficher toutes les heures données
 Route::post('/given-hours', [GivenHoursController::class, 'store']); // Créer une nouvelle entrée d'heures données

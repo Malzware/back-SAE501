@@ -10,8 +10,8 @@
     <h1>Ajouter une nouvelle ressource</h1>
 
     <!-- Formulaire pour ajouter une ressource -->
-    <form action="{{ url('/resources') }}" method="POST">
-        @csrf
+    <form action="{{ route('resources.store') }}" method="POST">
+    @csrf
         <label for="name">Nom de la ressource:</label>
         <input type="text" id="name" name="name" required><br><br>
 

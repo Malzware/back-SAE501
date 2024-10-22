@@ -4,63 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response; // Ajout de l'importation pour Response
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    /**
-     * Affiche toutes les utilisateurs.
-     *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
-     */
-    public function index2(): \Illuminate\Contracts\View\View|Response
+    // Affiche tous les utilisateurs.
+    public function index(): JsonResponse
     {
-        $successMessage = session('success'); 
-        echo "blah".$successMessage."blih";
-        $users = User::all(); // Récupère tous les utilisateurs
-        return view('users.index', compact('users')); // Affiche la vue avec les utilisateurs
-    }
-    public function index()
-    {
-        $successMessage = session('success'); 
-        // Récupère toutes les ressources avec la relation vers le semestre
-        $resources = User::all();
-        echo "blah".$successMessage."blih";
-        // Retourne les données à une vue ou une réponse JSON
-        return response()->json($resources);
-    }
-
-    /**
-     * Affiche le formulaire de création d'un utilisateur.
-     *
-     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
-     */
-    public function create(): \Illuminate\Contracts\View\View|Response
-    {
-        return view('users.create'); // Affiche le formulaire de création
-    }
-
-
-    public function show($id)
-    {
-        // Récupère la ressource spécifique avec la relation vers le semestre
-       
-        $users = User::all(); // Récupère tous les utilisateurs
-        // Retourne les données à une vue ou une réponse JSON
+        $users = User::all();
         return response()->json($users);
     }
 
-    /**
-     * Gère la soumission du formulaire pour ajouter un nouvel utilisateur.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    // Affiche un utilisateur spécifique.
+    public function show($id): JsonResponse
     {
-        // Validation des données
+        $user = User::findOrFail($id);
+        return response()->json($user);
+    }
+
+    // Gère la soumission du formulaire pour ajouter un nouvel utilisateur.
+    public function store(Request $request): JsonResponse
+    {
         $validatedData = $request->validate([
             'lastname' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
@@ -68,11 +33,42 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        // Création de l'utilisateur dans la base de données
-      //  $validatedData['password'] = bcrypt($validatedData['password']); // Hachage du mot de passe
-        User::create($validatedData);
+        $validatedData['password'] = Hash::make($validatedData['password']);
+        $user = User::create($validatedData);
 
-        // Redirection avec un message de succès
-        return redirect('/users')->with('success', 'Utilisateur avec succès');
+        return response()->json(['success' => true, 'user' => $user], 201);
+    }
+
+    // Met à jour un utilisateur existant.
+    public function update(Request $request, $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'lastname' => 'sometimes|required|string|max:255',
+            'firstname' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|string|min:8',
+        ]);
+        
+
+        if (!empty($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        } else {
+            unset($validatedData['password']);
+        }
+
+        $user->update($validatedData);
+
+        return response()->json(['success' => true, 'user' => $user]);
+    }
+
+    // Supprime un utilisateur spécifique.
+    public function destroy($id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return response()->json(['success' => true]);
     }
 }

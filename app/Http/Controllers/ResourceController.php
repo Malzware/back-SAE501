@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Resource;
 use Illuminate\Http\Request;
-use App\Models\Semester; // Ajoute cette ligne
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 
 class ResourceController extends Controller
@@ -13,44 +11,34 @@ class ResourceController extends Controller
     /**
      * Affiche toutes les ressources.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(): View
-{
-    $successMessage = session('success'); 
-    // Récupère toutes les ressources avec la relation vers le semestre
-    $resources = Resource::with('semester')->get();
-    $semesters = Semester::all(); // Ajout pour récupérer tous les semestres
-    return view('resources.index', compact('resources', 'semesters'));
-}
+    public function index(): JsonResponse
+    {
+        $resources = Resource::with('semester')->get();
+        return response()->json($resources);
+    }
 
     /**
      * Affiche une ressource spécifique.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
-        // Récupère la ressource spécifique avec la relation vers le semestre
         $resource = Resource::with('semester')->findOrFail($id);
-
-        // Retourne les données à une vue ou une réponse JSON
         return response()->json($resource);
     }
 
-    public function create()
+    /**
+     * Gère la soumission du formulaire pour ajouter une nouvelle ressource.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request): JsonResponse
     {
-        // Récupère tous les semestres pour les afficher dans le formulaire
-        $semesters = Semester::all();
-        return view('resources.create', compact('semesters'));
-    }
-
-    // Gère la soumission du formulaire pour ajouter une nouvelle ressource
-    public function store(Request $request)
-    {
-
-        // Validation des données
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'resource_code' => 'required|string|max:255',
@@ -59,40 +47,57 @@ class ResourceController extends Controller
             'cm' => 'nullable|integer',
             'td' => 'nullable|integer',
             'tp' => 'nullable|integer',
-            'national_total' => 'nullable|integer', // Ajouté
-            'national_tp' => 'nullable|integer', // Ajouté
-            'adapt' => 'nullable|integer', // Ajouté
-            'adapt_tp' => 'nullable|integer', // Ajouté
-            'projet_ne' => 'nullable|integer', // Ajouté
-            'projet_e' => 'nullable|integer', // Ajouté
-            'comment' => 'nullable|string', // Commentaire déjà présent
+            'national_total' => 'nullable|integer',
+            'national_tp' => 'nullable|integer',
+            'adapt' => 'nullable|integer',
+            'adapt_tp' => 'nullable|integer',
+            'projet_ne' => 'nullable|integer',
+            'projet_e' => 'nullable|integer',
+            'comment' => 'nullable|string',
         ]);
     
-        // Création de la ressource dans la base de données
-        Resource::create($validatedData);
+        $resource = Resource::create($validatedData);
     
-        // Redirection avec un message de succès
-        return redirect('/resources')->with('success', 'Ressource ajoutée avec succès');
+        return response()->json(['success' => true, 'resource' => $resource], 201);
     }
+
+    /**
+     * Met à jour une ressource existante.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request, $id): JsonResponse
-{
-    $resource = Resource::findOrFail($id);
+    {
+        $resource = Resource::findOrFail($id);
 
-    // Validation des données
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'resource_code' => 'required|string|max:255',
-        'title' => 'required|string|max:255',
-        'id_semester' => 'required|integer|exists:semesters,id',
-        'cm' => 'nullable|integer',
-        'td' => 'nullable|integer',
-        'tp' => 'nullable|integer',
-        // Ajoutez d'autres champs selon vos besoins
-    ]);
+        $validatedData = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'resource_code' => 'sometimes|required|string|max:255',
+            'title' => 'sometimes|required|string|max:255',
+            'id_semester' => 'sometimes|required|integer|exists:semesters,id',
+            'cm' => 'sometimes|nullable|integer',
+            'td' => 'sometimes|nullable|integer',
+            'tp' => 'sometimes|nullable|integer',
+        ]);
 
-    // Mise à jour de la ressource
-    $resource->update($validatedData);
+        $resource->update($validatedData);
+    
+        return response()->json(['success' => true, 'resource' => $resource]);
+    }
 
-    return response()->json(['success' => true]);
+    /**
+     * Supprime une ressource spécifique.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id): JsonResponse
+    {
+        $resource = Resource::findOrFail($id);
+        $resource->delete();
+
+        return response()->json(['success' => true]);
+    }
 }
-}    
