@@ -22,36 +22,25 @@ class RoleUserSeeder extends Seeder
         // Récupérer toutes les ressources
         $resources = Resource::all()->pluck('id')->toArray();
 
-        // Associer un rôle aléatoire et plusieurs ressources (ou aucune) à chaque utilisateur
+        // Associer un rôle aléatoire et au moins une ressource à chaque utilisateur
         foreach ($users as $user) {
             // Choisir un rôle aléatoire pour cet utilisateur
             $roleId = $roles[array_rand($roles)];
 
-            // Choisir aléatoirement 0 à 5 ressources à associer (ou laisser null)
-            $randomResourceIds = rand(0, 1) ? array_rand($resources, rand(1, 5)) : null;
+            // Choisir aléatoirement au moins une ressource à associer
+            $randomResourceIds = array_rand($resources, rand(1, 5));
 
-            // Si plusieurs ressources sont choisies, s'assurer que c'est un tableau
-            if ($randomResourceIds !== null && !is_array($randomResourceIds)) {
+            // Si une seule ressource est choisie, s'assurer que c'est un tableau
+            if (!is_array($randomResourceIds)) {
                 $randomResourceIds = [$randomResourceIds];
             }
 
             // Insérer une entrée dans role_user pour chaque ressource choisie
-            if ($randomResourceIds) {
-                foreach ($randomResourceIds as $resourceIndex) {
-                    DB::table('role_user')->insert([
-                        'user_id' => $user->id,
-                        'role_id' => $roleId,
-                        'resource_id' => $resources[$resourceIndex], // Associer une ressource spécifique
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-            } else {
-                // Si pas de ressource choisie, créer avec resource_id NULL
+            foreach ($randomResourceIds as $resourceIndex) {
                 DB::table('role_user')->insert([
                     'user_id' => $user->id,
                     'role_id' => $roleId,
-                    'resource_id' => null,
+                    'resource_id' => $resources[$resourceIndex], // Associer une ressource spécifique
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -59,3 +48,4 @@ class RoleUserSeeder extends Seeder
         }
     }
 }
+

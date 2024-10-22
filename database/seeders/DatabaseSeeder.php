@@ -14,8 +14,8 @@ class DatabaseSeeder extends Seeder
             SemesterSeeder::class,    // Crée les semestres (si nécessaire)
             ResourceSeeder::class,    // Crée les ressources
             RoleSeeder::class,        // Crée les rôles
-            GivenHoursSeeder::class,  // Crée les heures données (doit se faire après ResourceSeeder)
             RoleUserSeeder::class,    // Associe les rôles aux utilisateurs (doit se faire après UserSeeder)
+            GivenHoursSeeder::class,  // Je crée les ressources, je les associes aux users et ensuite j'attribue des heures
             PdfSeeder::class,         // Crée les PDFs si nécessaire
         ]);
     }

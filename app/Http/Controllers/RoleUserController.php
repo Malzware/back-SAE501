@@ -39,6 +39,23 @@ class RoleUserController extends Controller
         // Convertir le tableau associatif en tableau d'objets
         $result = array_values($groupedRoleUsers);
 
+        // Calculer les total heures pour chaque ressource
+        foreach ($result as &$user) {
+            foreach ($user['resources'] as &$resource) {
+                // Vérifie si 'given_hours' existe et n'est pas vide
+                if (!empty($resource->givenHours)) {
+                    $resource->total_hours = $this->calculateTotalHours($resource->givenHours); // Calcule le total
+                } else {
+                    // Initialise 'total_hours' à zéro si 'given_hours' est vide
+                    $resource->total_hours = [
+                        'hours_cm' => 0,
+                        'hours_td' => 0,
+                        'hours_tp' => 0,
+                    ];
+                }
+            }
+        }
+
         return response()->json($result);
     }
 
@@ -93,5 +110,22 @@ class RoleUserController extends Controller
         $roleUser->delete();
 
         return response()->json(null, 204);
+    }
+
+    private function calculateTotalHours($givenHours)
+    {
+        $total = [
+            'hours_cm' => 0,
+            'hours_td' => 0,
+            'hours_tp' => 0,
+        ];
+
+        foreach ($givenHours as $hour) {
+            $total['hours_cm'] += $hour->hours_cm; // Additionne les heures CM
+            $total['hours_td'] += $hour->hours_td; // Additionne les heures TD
+            $total['hours_tp'] += $hour->hours_tp; // Additionne les heures TP
+        }
+
+        return $total; // Retourne le total
     }
 }
