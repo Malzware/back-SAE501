@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Resource; // Assurez-vous que le modèle est bien importé
+use App\Models\Semester;
 use Faker\Factory as Faker;
 
 class ResourceSeeder extends Seeder
@@ -19,7 +20,7 @@ class ResourceSeeder extends Seeder
                 'name' => $faker->word(), // Nom de la ressource
                 'resource_code' => $faker->unique()->word(), // Code de la ressource
                 'title' => $faker->sentence(), // Titre de la ressource
-                'id_semester' => rand(1, 6), // ID du semestre, entre 1 et 6
+                'id_semester' => Semester::inRandomOrder()->first()->id,
                 'national_total' => $faker->randomDigit(), // Total national (ex: heures)
                 'national_tp' => $faker->randomDigit(), // Total TP national
                 'adapt' => $faker->randomDigit(), // Adaptation
