@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SignatureController;
 use Illuminate\Http\Request;    
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -105,3 +106,5 @@ Route::post('/pdf', function(Request $request) {
         return back()->with('error', 'Failed to generate PDF: ' . $e->getMessage());
     }
 })->name('generate.pdf');
+
+Route::post('send-signature', [SignatureController::class, 'sendSignature'])->name('send.signature');
