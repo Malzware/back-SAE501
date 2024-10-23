@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RoleUser;
+use App\Models\Resource;
 use Illuminate\Http\Request;
 
 class RoleUserController extends Controller
@@ -39,12 +40,18 @@ class RoleUserController extends Controller
         // Convertir le tableau associatif en tableau d'objets
         $result = array_values($groupedRoleUsers);
 
-        // Calculer les total heures pour chaque ressource
+        // Calculer les total heures pour chaque ressource et les stocker dans la table 'resources'
         foreach ($result as &$user) {
             foreach ($user['resources'] as &$resource) {
                 // Vérifie si 'given_hours' existe et n'est pas vide
                 if (!empty($resource->givenHours)) {
-                    $resource->total_hours = $this->calculateTotalHours($resource->givenHours); // Calcule le total
+                    // Calcule le total des heures
+                    $totalHours = $this->calculateTotalHours($resource->givenHours);
+                    $resource->total_hours = $totalHours;
+
+                    // Met à jour les colonnes 'cm', 'td', 'tp' dans la table 'resource'
+                    $this->updateResourceHours($resource->id, $totalHours);
+
                 } else {
                     // Initialise 'total_hours' à zéro si 'given_hours' est vide
                     $resource->total_hours = [
@@ -52,11 +59,28 @@ class RoleUserController extends Controller
                         'hours_td' => 0,
                         'hours_tp' => 0,
                     ];
+
+                    // Met à jour la ressource avec 0 si aucune heure n'est donnée
+                    $this->updateResourceHours($resource->id, $resource->total_hours);
                 }
             }
         }
 
         return response()->json($result);
+    }
+
+    // Fonction pour mettre à jour les heures dans la table 'resource'
+    private function updateResourceHours($resourceId, $totalHours)
+    {
+        $resource = Resource::findOrFail($resourceId);
+
+        // Met à jour les colonnes cm, td, tp avec les heures calculées
+        $resource->cm = $totalHours['hours_cm'];
+        $resource->td = $totalHours['hours_td'];
+        $resource->tp = $totalHours['hours_tp'];
+
+        // Sauvegarder la ressource mise à jour dans la base de données
+        $resource->save();
     }
 
     public function show($id)
