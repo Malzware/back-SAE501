@@ -46,7 +46,7 @@ class SignatureController extends Controller
                 $resource = $hours->first()->resource;
                 return [
                     'resource_name' => $resource->name,
-                    'resource_code' => $resource->resource_code,
+                    'resource_code' => $resource->code,
                     'semester' => $resource->semester->name ?? 'N/A',
                     'total_cm' => $hours->sum('hours_cm'),
                     'total_td' => $hours->sum('hours_td'),
@@ -67,12 +67,12 @@ class SignatureController extends Controller
         ]);
 
             // Generate PDF
-            $pdf = PDF::loadView('test', $data);
+            $pdf = PDF::loadView('recrutement', $data);
             
             // Delete the temporary signature file
             Storage::delete($fileWithPath);
 
-        return $pdf->stream('test' . $user->lastname . '_' . date('Y-m-d') . '.pdf');
+        return $pdf->stream('recrutement' . $user->lastname . '_' . date('Y-m-d') . '.pdf');
             
         } catch (\Exception $e) {
             return redirect('/')->with('error', 'Failed to save signature: ' . $e->getMessage());

@@ -1,162 +1,210 @@
+<!-- resources/views/recruitment.blade.php -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruitment Proposal Form</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Recruitment Form</title>
     <style>
-    body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 0;
-}
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
 
-.form-container {
-    max-width: 800px;
-    margin: 0 auto;
-    border: 1px solid black;
-    padding: 20px;
-}
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
 
-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
+        .container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
 
-.header-left h2 {
-    font-size: 1.5em;
-    margin-bottom: 0;
-}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-.header-right h3 {
-    font-size: 1.5em;
-    margin: 0;
-    text-align: right;
-}
+        .header-left {
+            width: 50%;
+        }
 
-.academic-year {
-    text-align: center;
-    font-size: 1.5em;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
+        .header-left img {
+            width: 100px;
+        }
 
-.proposal-section h2 {
-    text-align: center;
-    font-size: 1.3em;
-    margin: 10px 0;
-}
+        .header-right {
+            text-align: right;
+            font-size: 11px;
+        }
 
-.details-section, .candidature-section {
-    margin-bottom: 20px;
-}
+        .title {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
 
-.module-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
+        .title h1 {
+            font-size: 16px;
+            margin: 0;
+            text-transform: uppercase;
+        }
 
-.module-table th, .module-table td {
-    border: 1px solid black;
-    padding: 10px;
-    text-align: left;
-}
+        .title h2 {
+            font-size: 14px;
+            margin: 5px 0;
+        }
 
-.module-table th {
-    background-color: #f2f2f2;
-}
+        .title p {
+            font-size: 12px;
+        }
 
-.footer-section {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-}
+        .section {
+            margin-bottom: 15px;
+        }
 
-.footer-left, .footer-right {
-    width: 45%;
-}
-</style>
+        .section label {
+            font-weight: bold;
+            width: 220px;
+            display: inline-block;
+        }
+
+        .section .value {
+            font-weight: bold;
+        }
+
+        .checkbox-group {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .signature-section td {
+            height: 60px;
+        }
+
+        .signature-section {
+            margin-top: 20px;
+        }
+
+        .footer {
+            font-size: 10px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div class="form-container">
-        <header>
-            <div class="header-left">
-                <h2>IUT Béziers</h2>
-                <p>Place du 14 Juillet – BP 50438<br>
-                    34 505 BEZIERS<br>
-                    Service financier: 04 67 11 60 14</p>
-            </div>
-            <div class="header-right">
-                <h3>Université de Montpellier</h3>
-            </div>
-        </header>
 
-        <h1 class="academic-year">Année Universitaire 2024/2025</h1>
-
-        <div class="proposal-section">
-            <h2>PROPOSITION DE RECRUTEMENT AUX FONCTIONS DE CHARGES DE COURS</h2>
-            <p>POUR AVIS DU CONSEIL EN FORMATION RESTREINTE<br>
-                (document à retourner par mail à : iutb-ose-service@umontpellier.fr)</p>
+<div class="container">
+    <div class="header">
+        <div class="header-left">
+            <img src="{{ asset('iut-logo.png') }}" alt="IUT Béziers">
         </div>
-
-        <div class="details-section">
-            <div class="department">
-                <p><strong>DEPARTEMENT D'ENSEIGNEMENT :</strong> RT ☐ MMI ☐ TC ☐ LP ROB & IA ☐</p>
-                <p>Nom de l'enseignant responsable du module ou Directeur des Etudes qui sollicite le recrutement : <u>Caroline SURRIBAS</u></p>
-            </div>
-        </div>
-
-        <div class="candidature-section">
-            <!-- @foreach ($users as $user) -->
-            <h3>PROPOSITION DE CANDIDATURE VACATAIRE</h3>
-            <p>
-                Doctorant ☐ Retraité ☐ ou Autre ☑ (salarié-chef entreprise-auto-entrepreneur)
-            </p>
-            <p>Vacataire en N-1 : OUI ☐ NON ☑ Si non, joindre un CV à la proposition de candidature</p>
-            <p><strong>NOM :</strong> {{$lastname}} <strong>PRENOM :</strong> {{$firstname}}</p>
-            <p><strong>Dernier diplôme obtenu :</strong></p>
-            <p><strong>Adresse mail :</strong> {{$email}} <strong>Téléphone :</strong></p>
-            <p><strong>Date de début des cours :</strong></p>
-        </div>
-
-        <!--<table class="module-table">
-            <thead>
-                <tr>
-                    <th>N° Module</th>
-                    <th>NOM DU MODULE</th>
-                    <th>VOLUME HORAIRE (intégrant le nombre de groupe TD-TP)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    @foreach ($resources as $resource)
-                    <td>test</td>
-                    <td>Développement front avancé</td>
-                    <td>CM: 15, TD: 24</td>
-                </tr>
-                <tr>
-                    <td>R5.D06</td>
-                    <td>Développement back avancé</td>
-                    <td>CM: 18, TD: 24</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="footer-section">
-            <div class="footer-left">
-                <p>Date : 27/08/2024</p>
-                <p>Visa du Responsable de module, de la formation ou directeur des Etudes</p>
-            </div>
-            <div class="footer-right">
-                <p>Date :</p>
-                <p>Visa de l'intéressé</p>
-                <p>Date :</p>
-                <p>Visa du chef de département</p> -->
-            </div>
+        <div class="header-right">
+            <p>Place du 14 Juillet – BP 50438<br>
+            34505 BÉZIERS<br>
+            Service financier: 04 67 11 60 14</p>
         </div>
     </div>
+
+    <div class="title">
+        <h1>Proposition de Recrutement aux Fonctions de Charges de Cours</h1>
+        <h2>Année Universitaire 2024/2025</h2>
+        <p>Document à retourner par mail à: <strong>iut-ose-service@umontpellier.fr</strong></p>
+    </div>
+
+    <div class="section">
+        <label for="department">Département d'Enseignement :</label>
+        <span class="checkbox-group">RT ☐ MMI ☐ TC ☐ LP ROB & IA ☐</span>
+    </div>
+
+    <div class="section">
+        <label for="module-responsible">Nom de l'enseignant responsable du module :</label>
+        <span class="value">Caroline Surribas</span>
+    </div>
+
+    <div class="section">
+        <label for="candidate-name">Nom :</label>
+        <span class="value">{{ $user->lastname }}</span>
+        <label for="candidate-prenom" style="margin-left: 30px;">Prénom :</label>
+        <span class="value">{{ $user->firstname }}</span>
+    </div>
+
+    <div class="section">
+        <label for="diploma">Dernier diplôme obtenu :</label>
+        <span></span>
+    </div>
+
+    <div class="section">
+        <label for="address">Adresse mail :</label>
+        <span>{{ $user->email }}</span>
+        <label for="telephone" style="margin-left: 30px;">Téléphone :</label>
+        <span></span>
+    </div>
+    
+    <div class="section">
+        <label for="start-date">Date de début des cours :</label>
+        <span></span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>N° Module</th>
+                <th>Nom du Module</th>
+                <th>Volume Horaire</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach($givenHours as $resource)
+            <tr>
+                <td>{{$resource->code}}</td>
+                <td>{{$resource->name}}</td>
+                <td>CM: {{ $resourceHours['total_cm'] }} | TD: {{ $resourceHours['total_td'] }} | TP: {{ $resourceHours['total_tp'] }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <div class="signature-section">
+        <table>
+            <tr>
+                <td>Date: {{ $generated_at->format('d-m-Y') }}</td>
+                <td>Visa du Responsable de Module:</td>
+                <td>Visa de l’intéressé:</td>
+                <td>Visa du Chef de Département:</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>IUT Béziers, Université de Montpellier</p>
+    </div>
+</div>
+
 </body>
 </html>
