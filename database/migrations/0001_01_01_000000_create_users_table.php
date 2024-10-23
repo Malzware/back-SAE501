@@ -4,22 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUsersTable extends Migration
+return new class extends Migration
 {
     /**
-     * Exécutez la migration.
-     *
-     * @return void
+     * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id(); // Créé un champ 'id' comme clé primaire
-            $table->string('lastname'); // Champ pour le nom de famille
-            $table->string('firstname'); // Champ pour le prénom
-            $table->string('email')->unique(); // Champ pour l'email, avec contrainte d'unicité
-            $table->string('password'); // Champ pour le mot de passe
-            $table->timestamps(); // Champs pour 'created_at' et 'updated_at'
             $table->id();
             $table->string('firstname');
             $table->string('lastname');
@@ -47,12 +39,12 @@ class CreateUsersTable extends Migration
     }
 
     /**
-     * Annulez la migration.
-     *
-     * @return void
+     * Reverse the migrations.
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('users'); // Supprime la table lors du rollback
+        Schema::dropIfExists('users');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('sessions');
     }
-}
+};

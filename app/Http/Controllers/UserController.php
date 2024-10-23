@@ -4,71 +4,104 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
-    // Affiche tous les utilisateurs.
-    public function index(): JsonResponse
+    /**
+     * Affiche une liste des utilisateurs.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        $users = User::all();
-        return response()->json($users);
+        $users = User::all();  // Récupère tous les utilisateurs
+        return response()->json($users);  // Retourne les utilisateurs au format JSON
     }
 
-    // Affiche un utilisateur spécifique.
-    public function show($id): JsonResponse
+    /**
+     * Crée un nouvel utilisateur.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        $user = User::findOrFail($id);
-        return response()->json($user);
-    }
-
-    // Gère la soumission du formulaire pour ajouter un nouvel utilisateur.
-    public function store(Request $request): JsonResponse
-    {
+        // Valider les données
         $validatedData = $request->validate([
-            'lastname' => 'required|string|max:255',
-            'firstname' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
-        $validatedData['password'] = Hash::make($validatedData['password']);
-        $user = User::create($validatedData);
-
-        return response()->json(['success' => true, 'user' => $user], 201);
-    }
-
-    // Met à jour un utilisateur existant.
-    public function update(Request $request, $id): JsonResponse
-    {
-        $user = User::findOrFail($id);
-
-        $validatedData = $request->validate([
-            'lastname' => 'sometimes|required|string|max:255',
-            'firstname' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8',
+        // Créer un nouvel utilisateur
+        $user = User::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']),
         ]);
-        
 
-        if (!empty($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        } else {
-            unset($validatedData['password']);
-        }
-
-        $user->update($validatedData);
-
-        return response()->json(['success' => true, 'user' => $user]);
+        return response()->json($user, 201);  // Retourne l'utilisateur créé
     }
 
-    // Supprime un utilisateur spécifique.
-    public function destroy($id): JsonResponse
+    /**
+     * Affiche un utilisateur spécifique.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $user = User::find($id);
 
-        return response()->json(['success' => true]);
+        if ($user) {
+            return response()->json($user);
+        } else {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+    }
+
+    /**
+     * Met à jour un utilisateur existant.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        // Valider les données
+        $validatedData = $request->validate([
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+            'password' => 'sometimes|string|min:8',
+        ]);
+
+        $user = User::find($id);
+
+        if ($user) {
+            // Mettre à jour les informations de l'utilisateur
+            $user->update($validatedData);
+            return response()->json($user);
+        } else {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
+    }
+
+    /**
+     * Supprime un utilisateur existant.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        if ($user) {
+            $user->delete();
+            return response()->json(['message' => 'Utilisateur supprimé']);
+        } else {
+            return response()->json(['message' => 'Utilisateur non trouvé'], 404);
+        }
     }
 }
