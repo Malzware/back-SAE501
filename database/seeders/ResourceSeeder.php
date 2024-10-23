@@ -14,11 +14,27 @@ class ResourceSeeder extends Seeder
         // Créer une instance de Faker
         $faker = Faker::create();
 
+        // Tableaux pour garder une trace des noms et des codes uniques
+        $uniqueNames = [];
+        $uniqueCodes = [];
+
         // Boucle pour créer 10 ressources
         for ($i = 0; $i < 10; $i++) {
+            // Générer un nom unique
+            do {
+                $name = $faker->word();
+            } while (in_array($name, $uniqueNames));
+            $uniqueNames[] = $name; // Ajouter le nom au tableau des noms uniques
+
+            // Générer un code de ressource unique
+            do {
+                $resourceCode = $faker->unique()->word();
+            } while (in_array($resourceCode, $uniqueCodes));
+            $uniqueCodes[] = $resourceCode; // Ajouter le code au tableau des codes uniques
+
             Resource::create([
-                'name' => $faker->word(), // Nom de la ressource
-                'resource_code' => $faker->unique()->word(), // Code de la ressource
+                'name' => $name, // Nom de la ressource
+                'resource_code' => $resourceCode, // Code de la ressource
                 'title' => $faker->sentence(), // Titre de la ressource
                 'id_semester' => Semester::inRandomOrder()->first()->id,
                 'national_total' => $faker->randomDigit(), // Total national (ex: heures)
