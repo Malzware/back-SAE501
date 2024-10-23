@@ -23,6 +23,6 @@ class Resource extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'role_user');
+        return $this->belongsToMany(User::class, 'role_user', 'resource_id', 'user_id');
     }
 }

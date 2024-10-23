@@ -12,13 +12,12 @@ class ResourceSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Créer 10 ressources
         for ($i = 0; $i < 10; $i++) {
             Resource::create([
                 'name' => $faker->word(),
                 'resource_code' => $faker->unique()->word(),
                 'title' => $faker->sentence(),
-                'id_semester' => rand(1, 5), // Assume there are 5 semesters
+                'id_semester' => rand(1, 5), 
                 'cm' => $faker->randomDigit(),
                 'td' => $faker->randomDigit(),
                 'tp' => $faker->randomDigit(),

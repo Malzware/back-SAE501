@@ -12,11 +12,10 @@ class GivenHoursSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Créer 10 heures données
         for ($i = 0; $i < 10; $i++) {
             GivenHour::create([
-                'resource_id' => rand(1, 10), // Suppose que vous avez 10 ressources
-                'user_id' => rand(1, 10), // Suppose que vous avez 10 utilisateurs
+                'resource_id' => rand(1, 10), 
+                'user_id' => rand(1, 10), 
                 'hours_cm' => $faker->randomDigit(),
                 'hours_td' => $faker->randomDigit(),
                 'hours_tp' => $faker->randomDigit(),

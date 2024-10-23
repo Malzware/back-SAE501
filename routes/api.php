@@ -14,15 +14,26 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/resources', [ResourceController::class, 'index']);
-Route::get('/resources/{id}', [ResourceController::class, 'show']);
+Route::prefix('resources')->group(function () {
+    Route::get('/', [ResourceController::class, 'index'])->name('resources.index');
+    Route::post('/', [ResourceController::class, 'store'])->name('resources.store');
+    Route::get('/{id}', [ResourceController::class, 'show'])->name('resources.show');
+    Route::put('/{id}', [ResourceController::class, 'update'])->name('resources.update'); // Assurez-vous que c'est 'update', pas 'updatePost'
+    Route::delete('/{id}', [ResourceController::class, 'destroy'])->name('resources.destroy');
+    Route::post('/{id}/users', [ResourceController::class, 'addUserToResource'])->name('resources.addUser');
+    Route::get('/{id}/users', [ResourceController::class, 'getUsersFromResource'])->name('resources.getUsers');
+    Route::delete('/{id}/users', [ResourceController::class, 'removeUserFromResource']);
+    Route::put('/{id}/users/{userId}/given-hours', [ResourceController::class, 'updateUserGivenHours'])->name('resources.updateGivenHours');
+});
 
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('/{id}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
-Route::get('/users', [UserController::class, 'index']);  // Afficher tous les utilisateurs
-Route::post('/users', [UserController::class, 'store']);  // Créer un utilisateur
-Route::get('/users/{id}', [UserController::class, 'show']);  // Afficher un utilisateur spécifique
-Route::put('/users/{id}', [UserController::class, 'update']);  // Mettre à jour un utilisateur
-Route::delete('/users/{id}', [UserController::class, 'destroy']); 
 
 Route::get('/given-hours', [GivenHoursController::class, 'index']); // Afficher toutes les heures données
 Route::post('/given-hours', [GivenHoursController::class, 'store']); // Créer une nouvelle entrée d'heures données
