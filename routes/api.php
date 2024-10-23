@@ -20,6 +20,10 @@ Route::prefix('resources')->group(function () {
     Route::get('/{id}', [ResourceController::class, 'show'])->name('resources.show');
     Route::put('/{id}', [ResourceController::class, 'update'])->name('resources.update'); // Assurez-vous que c'est 'update', pas 'updatePost'
     Route::delete('/{id}', [ResourceController::class, 'destroy'])->name('resources.destroy');
+    Route::post('/{id}/users', [ResourceController::class, 'addUserToResource'])->name('resources.addUser');
+    Route::get('/{id}/users', [ResourceController::class, 'getUsersFromResource'])->name('resources.getUsers');
+    Route::delete('/{id}/users', [ResourceController::class, 'removeUserFromResource']);
+    Route::put('/{id}/users/{userId}/given-hours', [ResourceController::class, 'updateUserGivenHours'])->name('resources.updateGivenHours');
 });
 
 Route::prefix('users')->group(function () {

@@ -26,13 +26,13 @@ class User extends Model
     // Relation avec Resource via role_user
     public function resources()
     {
-        return $this->belongsToMany(Resource::class, 'role_user');
+        return $this->belongsToMany(Resource::class, 'role_user', 'user_id', 'resource_id');
     }
 
     // Relation avec GivenHour
     public function givenHours()
     {
-        return $this->hasMany(GivenHour::class);
+        return $this->hasMany(GivenHour::class, 'user_id');
     }
 
     // Relation avec Pdf
