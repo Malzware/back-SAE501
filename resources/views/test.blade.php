@@ -71,6 +71,11 @@
         </table>
     </div>
 
+    <div class="signature-section">
+        <p><strong>Teacher's Signature:</strong></p>
+        <div class="signature-container">
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($signaturePath)) }}" class="signature-image">
+        </div>
     <div class="footer">
         <p>Generated on {{ $generated_at->format('Y-m-d H:i:s') }}</p>
     </div>

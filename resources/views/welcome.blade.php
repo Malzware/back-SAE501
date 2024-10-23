@@ -38,8 +38,16 @@
         <a href="/pdf">Download user list</a><br/>
         <img src="https://preview.ibb.co/jnW4Qz/Grumpy_Cat_920x584.jpg" width=400 height=200 />
     </div>
-    
-    <div>
+
+    <?php
+    if (extension_loaded('gd')) {
+        echo "GD is installed!";
+    } else {
+        echo "GD is NOT installed!";
+    }
+    ?>
+
+    <!-- <div>
     <form action="/pdf" method="POST">
     @csrf
     <div>
@@ -50,11 +58,18 @@
             @enderror
         </div>
     </form>
-</div>
+</div> -->
 
        <div>
        <form method="POST" action="{{ route('send.signature') }}">
     @csrf
+    <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            @error('email')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
     <div>
         <label>Signature</label>
         <div class="signature-pad">
