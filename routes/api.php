@@ -47,11 +47,24 @@ Route::get('/semesters/{id}', [SemesterController::class, 'show']); // Afficher 
 Route::put('/semesters/{id}', [SemesterController::class, 'update']); // Mettre à jour un semestre
 Route::delete('/semesters/{id}', [SemesterController::class, 'destroy']); // Supprimer un semestre
 
-Route::get('/role-users', [RoleUserController::class, 'index']);  // Afficher tous les role_users
-Route::get('/role-users/{id}', [RoleUserController::class, 'show']);  // Afficher un role_user spécifique
-Route::post('/role-users', [RoleUserController::class, 'store']);  // Créer un role_user
-Route::put('/role-users/{id}', [RoleUserController::class, 'update']);  // Mettre à jour un role_user
-Route::delete('/role-users/{id}', [RoleUserController::class, 'destroy']);  // Supprimer un role_user
+// Afficher tous les RoleUsers
+Route::get('/role-users', [RoleUserController::class, 'index']);
+// Afficher un RoleUser spécifique
+Route::get('/role-users/{id}', [RoleUserController::class, 'show']);
+// Créer un RoleUser
+Route::post('/role-users', [RoleUserController::class, 'store']);
+// Mettre à jour un RoleUser
+Route::put('/role-users/{id}', [RoleUserController::class, 'update']);
+// Supprimer un RoleUser
+Route::delete('/role-users/{id}', [RoleUserController::class, 'destroy']);
+// Attacher une ressource à un RoleUser
+Route::post('/role-users/{id}/attach-resource', [RoleUserController::class, 'attachResource']);
+// Détacher une ressource d'un RoleUser
+Route::post('/role-users/{id}/detach-resource', [RoleUserController::class, 'detachResource']);
+// Attacher un rôle à un RoleUser
+Route::post('/role-users/{id}/attach-role', [RoleUserController::class, 'attachRole']);
+// Détacher un rôle d'un RoleUser
+Route::post('/role-users/{id}/detach-role', [RoleUserController::class, 'detachRole']);
 
 Route::get('/roles', [RoleController::class, 'index']); // Afficher tous les rôles
 Route::post('/roles', [RoleController::class, 'store']); // Créer un nouveau rôle
