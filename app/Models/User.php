@@ -2,37 +2,39 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
-    use HasFactory;
+    use HasApiTokens, Notifiable, HasFactory; // Ajoutez HasFactory ici
 
-    // Les attributs qui peuvent être assignés en masse
+    protected $table = 'users'; // Nom de la table (par défaut 'users' pour le modèle User)
+    
     protected $fillable = [
-        'lastname',
-        'firstname',
-        'email',
-        'password',
+        'lastname', 'firstname', 'email', 'password'
     ];
 
-    // Relations
+    // Relation avec Role via role_user
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_user');
+        return $this->belongsToMany(Role::class, 'role_user')
+                    ->withPivot('resource_id');
     }
 
     // Relation avec Resource via role_user
     public function resources()
     {
-        return $this->belongsToMany(Resource::class, 'role_user', 'user_id', 'resource_id');
+        return $this->belongsToMany(Resource::class, 'role_user');
     }
 
     // Relation avec GivenHour
     public function givenHours()
     {
-        return $this->hasMany(GivenHour::class, 'user_id');
+        return $this->hasMany(GivenHour::class);
     }
 
     // Relation avec Pdf
