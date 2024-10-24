@@ -29,10 +29,13 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/user-info', [UserController::class, 'getUserInfo']);
 });
 
-Route::post('/users', [UserController::class, 'store']);
-Route::get('/users/{id}', [UserController::class, 'show']);
-Route::put('/users/{id}', [UserController::class, 'update']);
-Route::delete('/users/{id}', [UserController::class, 'destroy']);
+Route::prefix('users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::post('/', [UserController::class, 'store'])->name('users.store');
+    Route::get('/{id}', [UserController::class, 'show'])->name('users.show');
+    Route::put('/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+});
 
 
 Route::get('/given-hours', [GivenHoursController::class, 'index']); // Afficher toutes les heures données
