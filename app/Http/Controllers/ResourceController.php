@@ -3,55 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Resource;
-use App\Models\GivenHour;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ResourceController extends Controller
 {
     /**
-     * Affiche toutes les ressources.
+     * Affiche toutes les ressources avec leurs semestres et utilisateurs.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        // Récupère toutes les ressources avec leurs heures données et met à jour les colonnes cm, td, tp
-        return response()->json(Resource::with('givenHours')->get()->map(function ($resource) {
-            $totalHours = $this->calculateTotalHours($resource->givenHours); // Calcule les heures totales
+        // Charger les ressources avec leurs relations 'semester' et 'users'
+        $resources = Resource::with(['semester', 'users'])->get();
 
-            // Met à jour les colonnes cm, td, tp de la ressource
-            $resource->cm = $totalHours['hours_cm'];
-            $resource->td = $totalHours['hours_td'];
-            $resource->tp = $totalHours['hours_tp'];
-            $resource->save(); // Sauvegarde les nouvelles valeurs dans la table resource
-
-            return [
-                'id' => $resource->id,
-                'name' => $resource->name,
-                'resource_code' => $resource->resource_code,
-                'title' => $resource->title,
-                'id_semester' => $resource->id_semester,
-                'cm' => $resource->cm, // heures CM calculées
-                'td' => $resource->td, // heures TD calculées
-                'tp' => $resource->tp, // heures TP calculées
-                'national_total' => $resource->national_total,
-                'national_tp' => $resource->national_tp,
-                'adapt' => $resource->adapt,
-                'adapt_tp' => $resource->adapt_tp,
-                'projet_ne' => $resource->projet_ne,
-                'projet_e' => $resource->projet_e,
-                'comment' => $resource->comment,
-                'semester' => $resource->semester,
-                'given_hours' => $resource->givenHours, // Récupérer les heures données
-            ];
-        }));
+        return response()->json($resources);
     }
 
     /**
-     * Affiche une ressource spécifique.
+     * Affiche une ressource spécifique avec son semestre et ses utilisateurs.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show($id): JsonResponse
     {
