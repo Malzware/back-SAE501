@@ -14,11 +14,12 @@ class UserSeeder extends Seeder
 
         for ($i = 0; $i < 10; $i++) {
             User::create([
-                'lastname' => $faker->lastName(),
                 'firstname' => $faker->firstName(),
+                'lastname' => $faker->lastName(),
                 'email' => $faker->unique()->safeEmail(),
-                'password' => bcrypt('password'), // Utiliser bcrypt pour hacher le mot de passe
-                // Les colonnes created_at et updated_at sont automatiquement gérées par Eloquent
+                'password' => bcrypt('password'), // Utiliser un mot de passe par défaut
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
     }
