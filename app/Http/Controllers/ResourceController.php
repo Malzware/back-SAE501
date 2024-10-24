@@ -108,11 +108,18 @@ class ResourceController extends Controller
      */
     public function destroy($id): JsonResponse
     {
-        $resource = Resource::findOrFail($id);
+        $resource = Resource::with(['givenHours', 'roleUsers'])->findOrFail($id);
+
+        // Supprimez d'abord les heures données et les associations avec les utilisateurs
+        $resource->givenHours()->delete(); // Suppression des heures données
+        $resource->roleUsers()->delete(); // Suppression des rôles associés, si applicable
+
+        // Ensuite, supprimez la ressource elle-même
         $resource->delete();
 
         return response()->json(['success' => true]);
     }
+
 
     /**
      * Retire un utilisateur d'une ressource spécifique.
