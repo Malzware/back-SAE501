@@ -21,6 +21,9 @@ class CreateGivenHoursTable extends Migration
             $table->integer('hours_td')->nullable();
             $table->integer('hours_tp')->nullable();
             $table->timestamps();
+
+            $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade');
+
         });
     }
 

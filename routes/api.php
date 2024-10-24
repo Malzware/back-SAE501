@@ -21,10 +21,6 @@ Route::prefix('resources')->group(function () {
     Route::get('/{id}', [ResourceController::class, 'show'])->name('resources.show');
     Route::put('/{id}', [ResourceController::class, 'update'])->name('resources.update'); // Assurez-vous que c'est 'update', pas 'updatePost'
     Route::delete('/{id}', [ResourceController::class, 'destroy'])->name('resources.destroy');
-    Route::post('/{id}/users', [ResourceController::class, 'addUserToResource'])->name('resources.addUser');
-    Route::get('/{id}/users', [ResourceController::class, 'getUsersFromResource'])->name('resources.getUsers');
-    Route::delete('/{id}/users', [ResourceController::class, 'removeUserFromResource']);
-    Route::put('/{id}/users/{userId}/given-hours', [ResourceController::class, 'updateUserGivenHours'])->name('resources.updateGivenHours');
 });
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -51,11 +47,18 @@ Route::get('/semesters/{id}', [SemesterController::class, 'show']); // Afficher 
 Route::put('/semesters/{id}', [SemesterController::class, 'update']); // Mettre à jour un semestre
 Route::delete('/semesters/{id}', [SemesterController::class, 'destroy']); // Supprimer un semestre
 
-Route::get('/role-users', [RoleUserController::class, 'index']);  // Afficher tous les role_users
-Route::get('/role-users/{id}', [RoleUserController::class, 'show']);  // Afficher un role_user spécifique
-Route::post('/role-users', [RoleUserController::class, 'store']);  // Créer un role_user
-Route::put('/role-users/{id}', [RoleUserController::class, 'update']);  // Mettre à jour un role_user
-Route::delete('/role-users/{id}', [RoleUserController::class, 'destroy']);  // Supprimer un role_user
+// Afficher tous les RoleUsers
+Route::get('/role-users', [RoleUserController::class, 'index']);
+// Afficher un RoleUser spécifique
+Route::get('/role-users/{id}', [RoleUserController::class, 'show']);
+// Créer un RoleUser
+Route::post('/role-users', [RoleUserController::class, 'store']);
+// Mettre à jour un RoleUser
+Route::put('/role-users/{id}', [RoleUserController::class, 'update']);
+// Supprimer un RoleUser
+Route::delete('/role-users/{id}', [RoleUserController::class, 'destroy']);
+Route::post('/role-users/{id}/attach-resources', [RoleUserController::class, 'attachResources']);
+Route::post('/role-users/{id}/detach-resources', [RoleUserController::class, 'detachResources']);
 
 Route::get('/roles', [RoleController::class, 'index']); // Afficher tous les rôles
 Route::post('/roles', [RoleController::class, 'store']); // Créer un nouveau rôle
@@ -65,3 +68,11 @@ Route::delete('/roles/{id}', [RoleController::class, 'destroy']); // Supprimer u
 
 Route::get('/pdfs', [PdfController::class, 'index']); // Afficher tous les PDF
 Route::get('/pdfs/{id}', [PdfController::class, 'show']); // Afficher un PDF spécifique
+
+Route::prefix('semesters')->group(function () {
+    Route::get('/', [SemesterController::class, 'index'])->name('semesters.index');
+    Route::post('/', [SemesterController::class, 'store'])->name('semesters.store');
+    Route::get('/{id}', [SemesterController::class, 'show'])->name('semesters.show');
+    Route::put('/{id}', [SemesterController::class, 'update'])->name('semesters.update');
+    Route::delete('/{id}', [SemesterController::class, 'destroy'])->name('semesters.destroy');
+});

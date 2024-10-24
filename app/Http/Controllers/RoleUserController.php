@@ -4,152 +4,155 @@ namespace App\Http\Controllers;
 
 use App\Models\RoleUser;
 use App\Models\Resource;
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RoleUserController extends Controller
 {
     public function index()
     {
-        // Charger les relations user, role, resource et resource.givenHours
-        $roleUsers = RoleUser::with(['user', 'role', 'resource.givenHours'])->get();
+        // Charger les relations user, role et resources
+        $roleUsers = RoleUser::with(['user', 'role', 'resources'])->get();
 
-        // Initialiser un tableau pour regrouper les données par user_id
-        $groupedRoleUsers = [];
-
-        foreach ($roleUsers as $roleUser) {
-            $userId = $roleUser->user_id;
-
-            // Si le user_id n'existe pas dans le tableau, l'initialiser
-            if (!isset($groupedRoleUsers[$userId])) {
-                $groupedRoleUsers[$userId] = [
-                    'id' => $roleUser->id, // Conserver l'id du premier RoleUser
-                    'user_id' => $userId,
-                    'role_id' => $roleUser->role_id,
-                    'created_at' => $roleUser->created_at,
-                    'updated_at' => $roleUser->updated_at,
-                    'user' => $roleUser->user,
-                    'role' => $roleUser->role,
-                    'resources' => [], // Utiliser un tableau pour stocker les ressources
-                ];
-            }
-
-            // Ajouter la ressource à la liste des ressources pour cet utilisateur
-            $groupedRoleUsers[$userId]['resources'][] = $roleUser->resource;
-        }
-
-        // Convertir le tableau associatif en tableau d'objets
-        $result = array_values($groupedRoleUsers);
-
-        // Calculer les total heures pour chaque ressource et les stocker dans la table 'resources'
-        foreach ($result as &$user) {
-            foreach ($user['resources'] as &$resource) {
-                // Vérifie si 'given_hours' existe et n'est pas vide
-                if (!empty($resource->givenHours)) {
-                    // Calcule le total des heures
-                    $totalHours = $this->calculateTotalHours($resource->givenHours);
-                    $resource->total_hours = $totalHours;
-
-                    // Met à jour les colonnes 'cm', 'td', 'tp' dans la table 'resource'
-                    $this->updateResourceHours($resource->id, $totalHours);
-
-                } else {
-                    // Initialise 'total_hours' à zéro si 'given_hours' est vide
-                    $resource->total_hours = [
-                        'hours_cm' => 0,
-                        'hours_td' => 0,
-                        'hours_tp' => 0,
-                    ];
-
-                    // Met à jour la ressource avec 0 si aucune heure n'est donnée
-                    $this->updateResourceHours($resource->id, $resource->total_hours);
-                }
-            }
-        }
-
-        return response()->json($result);
-    }
-
-    // Fonction pour mettre à jour les heures dans la table 'resource'
-    private function updateResourceHours($resourceId, $totalHours)
-    {
-        $resource = Resource::findOrFail($resourceId);
-
-        // Met à jour les colonnes cm, td, tp avec les heures calculées
-        $resource->cm = $totalHours['hours_cm'];
-        $resource->td = $totalHours['hours_td'];
-        $resource->tp = $totalHours['hours_tp'];
-
-        // Sauvegarder la ressource mise à jour dans la base de données
-        $resource->save();
+        return response()->json($roleUsers);
     }
 
     public function show($id)
     {
         // Récupérer le RoleUser spécifique
-        $roleUser = RoleUser::with(['user', 'role', 'resource.givenHours'])
-            ->findOrFail($id);
+        $roleUser = RoleUser::with(['user', 'role', 'resources'])->findOrFail($id);
 
-        // Récupérer toutes les ressources associées au user_id
-        $resources = RoleUser::with(['resource.givenHours'])
-            ->where('user_id', $roleUser->user_id)
-            ->get()
-            ->pluck('resource'); // Extraire uniquement les ressources
-
-        return response()->json([
-            'id' => $roleUser->id,
-            'user_id' => $roleUser->user_id,
-            'role_id' => $roleUser->role_id,
-            'created_at' => $roleUser->created_at,
-            'updated_at' => $roleUser->updated_at,
-            'user' => $roleUser->user,
-            'role' => $roleUser->role,
-            'resources' => $resources // Renvoie toutes les ressources associées
-        ]);
+        return response()->json($roleUser);
     }
 
     public function store(Request $request)
     {
+        // Valider les données d'entrée
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Créer le RoleUser
         $roleUser = RoleUser::create($request->all());
 
         // Charger les relations après création
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 201);
     }
 
     public function update(Request $request, $id)
     {
+        // Valider les données d'entrée
+        $validator = Validator::make($request->all(), [
+            'role_id' => 'sometimes|exists:roles,id',
+            'user_id' => 'sometimes|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Récupérer le RoleUser
         $roleUser = RoleUser::findOrFail($id);
         $roleUser->update($request->all());
 
         // Recharger les relations après mise à jour
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 200);
     }
 
     public function destroy($id)
     {
+        // Supprimer le RoleUser
         $roleUser = RoleUser::findOrFail($id);
         $roleUser->delete();
 
         return response()->json(null, 204);
     }
 
-    private function calculateTotalHours($givenHours)
+    public function attachResources(Request $request, $id)
     {
-        $total = [
-            'hours_cm' => 0,
-            'hours_td' => 0,
-            'hours_tp' => 0,
-        ];
+        // Valider les IDs de ressources
+        $request->validate([
+            'resource_ids' => 'required|array',
+            'resource_ids.*' => 'exists:resources,id', // Vérifie que chaque ressource existe
+        ]);
 
-        foreach ($givenHours as $hour) {
-            $total['hours_cm'] += $hour->hours_cm; // Additionne les heures CM
-            $total['hours_td'] += $hour->hours_td; // Additionne les heures TD
-            $total['hours_tp'] += $hour->hours_tp; // Additionne les heures TP
+        // Récupérer le RoleUser
+        $roleUser = RoleUser::findOrFail($id);
+        $roleUser->resources()->attach($request->input('resource_ids'));
+
+        // Recharger les relations après attachement
+        $roleUser->load(['user', 'role', 'resources']);
+
+        return response()->json([
+            'message' => 'Resources attached successfully.',
+            'role_user' => $roleUser,
+        ], 200);
+    }
+
+    public function detachResources(Request $request, $id)
+    {
+        // Valider les IDs de ressources
+        $request->validate([
+            'resource_ids' => 'required|array',
+            'resource_ids.*' => 'exists:resources,id', // Vérifie que chaque ressource existe
+        ]);
+
+        // Récupérer le RoleUser
+        $roleUser = RoleUser::findOrFail($id);
+        $roleUser->resources()->detach($request->input('resource_ids'));
+
+        // Recharger les relations après détachement
+        $roleUser->load(['user', 'role', 'resources']);
+
+        return response()->json($roleUser, 200);
+    }
+
+    public function attachRole(Request $request, $id)
+    {
+        // Valider les données
+        $validator = Validator::make($request->all(), [
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
-        return $total; // Retourne le total
+        // Récupérer le RoleUser
+        $roleUser = RoleUser::findOrFail($id);
+
+        // Associer le rôle
+        $roleUser->role()->associate($request->role_id);
+        $roleUser->save();
+
+        // Recharger les relations après association
+        $roleUser->load(['user', 'role', 'resources']);
+
+        return response()->json($roleUser, 200);
+    }
+
+    public function detachRole(Request $request, $id)
+    {
+        // Récupérer le RoleUser
+        $roleUser = RoleUser::findOrFail($id);
+
+        // Détacher le rôle
+        $roleUser->role()->dissociate();
+        $roleUser->save();
+
+        // Recharger les relations après détachement
+        $roleUser->load(['user', 'role', 'resources']);
+
+        return response()->json($roleUser, 200);
     }
 }
