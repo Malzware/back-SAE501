@@ -14,22 +14,20 @@ class RoleUser extends Model
     protected $fillable = [
         'user_id',
         'role_id',
-        'resource_id',
     ];
 
-    // Définir la relation avec le modèle User
+    // Relation avec User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Définir la relation avec le modèle Role
+    // Relation avec Role
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
-    // Définir la relation avec le modèle Resource
     public function resource()
     {
         return $this->belongsTo(Resource::class);
