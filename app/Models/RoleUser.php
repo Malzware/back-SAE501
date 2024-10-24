@@ -14,7 +14,6 @@ class RoleUser extends Model
     protected $fillable = [
         'user_id',
         'role_id',
-        'resource_id', // Champ supplémentaire pour la ressource unique
     ];
 
     // Relation avec User
