@@ -28,8 +28,9 @@ class RoleUser extends Model
         return $this->belongsTo(Role::class);
     }
 
-    public function resource()
+    // Relation avec Resource (plusieurs à plusieurs)
+    public function resources()
     {
-        return $this->belongsTo(Resource::class);
+        return $this->belongsToMany(Resource::class, 'resource_role_user');
     }
 }

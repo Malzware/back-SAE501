@@ -12,8 +12,8 @@ class RoleUserController extends Controller
 {
     public function index()
     {
-        // Charger les relations user, role et resource
-        $roleUsers = RoleUser::with(['user', 'role', 'resource.givenHours'])->get();
+        // Charger les relations user, role et resources
+        $roleUsers = RoleUser::with(['user', 'role', 'resources'])->get();
 
         return response()->json($roleUsers);
     }
@@ -21,7 +21,7 @@ class RoleUserController extends Controller
     public function show($id)
     {
         // Récupérer le RoleUser spécifique
-        $roleUser = RoleUser::with(['user', 'role', 'resource.givenHours'])->findOrFail($id);
+        $roleUser = RoleUser::with(['user', 'role', 'resources'])->findOrFail($id);
 
         return response()->json($roleUser);
     }
@@ -42,7 +42,7 @@ class RoleUserController extends Controller
         $roleUser = RoleUser::create($request->all());
 
         // Charger les relations après création
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 201);
     }
@@ -64,7 +64,7 @@ class RoleUserController extends Controller
         $roleUser->update($request->all());
 
         // Recharger les relations après mise à jour
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 200);
     }
@@ -78,56 +78,41 @@ class RoleUserController extends Controller
         return response()->json(null, 204);
     }
 
-    public function attachResource(Request $request, $id)
+    public function attachResources(Request $request, $id)
     {
-        // Valider la requête pour s'assurer que resource_id est présent et valide
+        // Valider les IDs de ressources
         $request->validate([
-            'resource_id' => 'required|exists:resources,id', // Vérifie que la ressource existe dans la base de données
+            'resource_ids' => 'required|array',
+            'resource_ids.*' => 'exists:resources,id', // Vérifie que chaque ressource existe
         ]);
 
-        // Récupérer le RoleUser par son ID
+        // Récupérer le RoleUser
         $roleUser = RoleUser::findOrFail($id);
+        $roleUser->resources()->attach($request->input('resource_ids'));
 
-        // Assigner la ressource au RoleUser
-        $roleUser->resource_id = $request->input('resource_id');
-        $roleUser->save(); // Enregistrer les changements
-
-        // Charger les relations pour la réponse
-        $roleUser->load('user', 'role', 'resource');
+        // Recharger les relations après attachement
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json([
-            'message' => 'Resource attached successfully.',
+            'message' => 'Resources attached successfully.',
             'role_user' => $roleUser,
         ], 200);
     }
 
-    public function detachResource(Request $request, $id)
+    public function detachResources(Request $request, $id)
     {
-        // Valider les données
-        $validator = Validator::make($request->all(), [
-            'resource_id' => 'required|exists:resources,id',
+        // Valider les IDs de ressources
+        $request->validate([
+            'resource_ids' => 'required|array',
+            'resource_ids.*' => 'exists:resources,id', // Vérifie que chaque ressource existe
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
         // Récupérer le RoleUser
         $roleUser = RoleUser::findOrFail($id);
-
-        // Vérifiez si la resource_id correspond à celle du RoleUser
-        if ($roleUser->resource_id == $request->resource_id) {
-            // Détacher la ressource en mettant resource_id à null
-            $roleUser->resource_id = null;
-            $roleUser->save(); // Enregistrer les changements
-        } else {
-            return response()->json([
-                'message' => 'The specified resource is not attached to this RoleUser.'
-            ], 400);
-        }
+        $roleUser->resources()->detach($request->input('resource_ids'));
 
         // Recharger les relations après détachement
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 200);
     }
@@ -151,7 +136,7 @@ class RoleUserController extends Controller
         $roleUser->save();
 
         // Recharger les relations après association
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 200);
     }
@@ -166,7 +151,7 @@ class RoleUserController extends Controller
         $roleUser->save();
 
         // Recharger les relations après détachement
-        $roleUser->load(['user', 'role', 'resource.givenHours']);
+        $roleUser->load(['user', 'role', 'resources']);
 
         return response()->json($roleUser, 200);
     }

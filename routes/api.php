@@ -53,10 +53,8 @@ Route::post('/role-users', [RoleUserController::class, 'store']);
 Route::put('/role-users/{id}', [RoleUserController::class, 'update']);
 // Supprimer un RoleUser
 Route::delete('/role-users/{id}', [RoleUserController::class, 'destroy']);
-// Attacher une ressource à un RoleUser
-Route::post('/role-users/{id}/attach-resource', [RoleUserController::class, 'attachResource']);
-// Détacher une ressource d'un RoleUser
-Route::post('/role-users/{id}/detach-resource', [RoleUserController::class, 'detachResource']);
+Route::post('/role-users/{id}/attach-resources', [RoleUserController::class, 'attachResources']);
+Route::post('/role-users/{id}/detach-resources', [RoleUserController::class, 'detachResources']);
 
 Route::get('/roles', [RoleController::class, 'index']); // Afficher tous les rôles
 Route::post('/roles', [RoleController::class, 'store']); // Créer un nouveau rôle
