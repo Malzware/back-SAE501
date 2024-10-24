@@ -23,9 +23,14 @@ class AuthController extends Controller
     $user = Auth::user();
     $token = $user->createToken('authToken')->plainTextToken;
 
-    return response()->json(['token' => $token]);
-}
+    // Récupérer tous les rôles associés à l'utilisateur
+    $roles = $user->roles->pluck('name')->toArray(); 
 
+    return response()->json([
+        'token' => $token,
+        'roles' => $roles
+    ]);
+}
 
     /**
      * Déconnecter un utilisateur.
