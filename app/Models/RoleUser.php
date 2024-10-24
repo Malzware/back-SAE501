@@ -9,7 +9,6 @@ class RoleUser extends Model
 {
     use HasFactory;
 
-    // SpÃ©cifiez le nom de la table
     protected $table = 'role_user';
 
     protected $fillable = [
@@ -17,4 +16,22 @@ class RoleUser extends Model
         'role_id',
         'resource_id',
     ];
+
+    // Définir la relation avec le modèle User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // Définir la relation avec le modèle Role
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    // Définir la relation avec le modèle Resource
+    public function resource()
+    {
+        return $this->belongsTo(Resource::class);
+    }
 }

@@ -29,14 +29,14 @@ class ResourceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function show($id): JsonResponse
-{
-    // Charger une ressource avec son semestre, ses utilisateurs, et leurs heures données filtrées par resource_id
-    $resource = Resource::with(['semester', 'users.givenHours' => function ($query) use ($id) {
-        $query->where('resource_id', $id);
-    }])->findOrFail($id);
+    {
+        // Charger une ressource avec son semestre, ses utilisateurs, et leurs heures données filtrées par resource_id
+        $resource = Resource::with(['semester', 'users.givenHours' => function ($query) use ($id) {
+            $query->where('resource_id', $id);
+        }])->findOrFail($id);
 
-    return response()->json($resource);
-}
+        return response()->json($resource);
+    }
     /**
      * Gère la soumission du formulaire pour ajouter une nouvelle ressource.
      *
@@ -115,63 +115,6 @@ class ResourceController extends Controller
     }
 
     /**
-     * Associe un utilisateur à une ressource avec un rôle spécifique.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $resourceId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function addUserToResource(Request $request, $resourceId): JsonResponse
-{
-    // Valider les données d'entrée
-    $validatedData = $request->validate([
-        'user_id' => 'required|exists:users,id',  // S'assurer que l'utilisateur existe
-        'role_id' => 'required|exists:roles,id'   // S'assurer que le rôle existe
-    ]);
-
-    // Récupérer la ressource par ID
-    $resource = Resource::findOrFail($resourceId);
-
-    // Vérifier si l'utilisateur est déjà associé à la ressource
-    $existingUser = $resource->users()->where('user_id', $validatedData['user_id'])->first();
-
-    if ($existingUser) {
-        // Si l'utilisateur est déjà associé, mettre à jour son rôle si nécessaire
-        $resource->users()->updateExistingPivot($validatedData['user_id'], ['role_id' => $validatedData['role_id']]);
-
-        // Mettre à jour les heures à 0 dans givenHours si une association existante est trouvée
-        $givenHour = \App\Models\GivenHour::where('user_id', $validatedData['user_id'])
-                                          ->where('resource_id', $resourceId)
-                                          ->first();
-
-        if ($givenHour) {
-            $givenHour->update([
-                'hours_cm' => 0,
-                'hours_td' => 0,
-                'hours_tp' => 0
-            ]);
-        }
-
-        return response()->json(['message' => 'User role and hours updated in resource successfully']);
-    } else {
-        // Sinon, ajouter l'utilisateur à la ressource via la table pivot 'role_user'
-        $resource->users()->attach($validatedData['user_id'], ['role_id' => $validatedData['role_id']]);
-
-        // Ajouter une entrée dans givenHours avec hours_cm, hours_td, et hours_tp initialisés à 0
-        \App\Models\GivenHour::create([
-            'user_id'    => $validatedData['user_id'],
-            'resource_id' => $resourceId,
-            'hours_cm'   => 0,
-            'hours_td'   => 0,
-            'hours_tp'   => 0,
-            'comment'    => '' // Tu peux ajouter un commentaire vide ou un autre texte par défaut
-        ]);
-
-        return response()->json(['message' => 'User added to resource with hours set to 0 successfully']);
-    }
-}
-
-    /**
      * Retire un utilisateur d'une ressource spécifique.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -179,63 +122,60 @@ class ResourceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function removeUserFromResource(Request $request, $resourceId): JsonResponse
-{
-    $validatedData = $request->validate([
-        'user_id' => 'required|exists:users,id',
-    ]);
+    {
+        $validatedData = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
 
-    $resource = Resource::findOrFail($resourceId);
+        $resource = Resource::findOrFail($resourceId);
 
-    // Supprimer l'association entre l'utilisateur et la ressource
-    $resource->users()->detach($validatedData['user_id']);
+        // Supprimer l'association entre l'utilisateur et la ressource
+        $resource->users()->detach($validatedData['user_id']);
 
-    return response()->json(['message' => 'User removed from resource successfully']);
-}
+        return response()->json(['message' => 'User removed from resource successfully']);
+    }
 
     public function getUsersFromResource($resourceId): JsonResponse
-{
-    $resource = Resource::with('users')->findOrFail($resourceId);
-    return response()->json($resource->users);
-}
-public function updateUserGivenHours(Request $request, $resourceId, $userId): JsonResponse
-{
-    // Valider les données d'entrée
-    $validatedData = $request->validate([
-        'hours_cm' => 'nullable|integer',
-        'hours_td' => 'nullable|integer',
-        'hours_tp' => 'nullable|integer',
-        'comment'  => 'nullable|string|max:255',
-    ]);
-
-    // Trouver les heures données par utilisateur et ressource
-    $givenHour = \App\Models\GivenHour::where('user_id', $userId)
-                                      ->where('resource_id', $resourceId)
-                                      ->first();
-
-    if (!$givenHour) {
-        return response()->json(['error' => 'Given hours not found for the specified user and resource.'], 404);
+    {
+        $resource = Resource::with('users')->findOrFail($resourceId);
+        return response()->json($resource->users);
     }
+    public function updateUserGivenHours(Request $request, $resourceId, $userId): JsonResponse
+    {
+        // Valider les données d'entrée
+        $validatedData = $request->validate([
+            'hours_cm' => 'nullable|integer',
+            'hours_td' => 'nullable|integer',
+            'hours_tp' => 'nullable|integer',
+            'comment'  => 'nullable|string|max:255',
+        ]);
 
-    // Mettre à jour les heures données seulement si elles ont changé
-    $hasChanged = true;
-    // foreach ($validatedData as $key => $value) {
-    //     // Vérifie si la propriété est définie dans les données validées
-    //     if (array_key_exists($key, $validatedData) && $givenHour->$key != $value) {
-    //         $hasChanged = true;
-    //         break;
-    //     }
-    // }
+        // Trouver les heures données par utilisateur et ressource
+        $givenHour = \App\Models\GivenHour::where('user_id', $userId)
+            ->where('resource_id', $resourceId)
+            ->first();
 
-    // Mettre à jour les heures données seulement si elles ont changé
-    if ($hasChanged) {
+        if (!$givenHour) {
+            return response()->json(['error' => 'Given hours not found for the specified user and resource.'], 404);
+        }
 
-        $newhours = $givenHour->update($validatedData);
-        return response()->json(['success' => true, 'givenHour' => $givenHour]);
-    } else {
-        return response()->json(['success' => false, 'message' => 'No changes made.']);
+        // Mettre à jour les heures données seulement si elles ont changé
+        $hasChanged = true;
+        // foreach ($validatedData as $key => $value) {
+        //     // Vérifie si la propriété est définie dans les données validées
+        //     if (array_key_exists($key, $validatedData) && $givenHour->$key != $value) {
+        //         $hasChanged = true;
+        //         break;
+        //     }
+        // }
+
+        // Mettre à jour les heures données seulement si elles ont changé
+        if ($hasChanged) {
+
+            $newhours = $givenHour->update($validatedData);
+            return response()->json(['success' => true, 'givenHour' => $givenHour]);
+        } else {
+            return response()->json(['success' => false, 'message' => 'No changes made.']);
+        }
     }
 }
-
-
-}
-
