@@ -28,7 +28,6 @@ Route::post('/pdf', function(Request $request) {
 
     try {
         // Find user with all relationships
-        // Note: Changed GivenHours to GivenHour to match your model
         $user = User::with([
             'roles',
             'givenHours.resource.semester',
@@ -52,9 +51,6 @@ Route::post('/pdf', function(Request $request) {
             }),
             'generated_at' => now(),
         ];
-
-        // For debugging - remove this in production
-        // dd($data);
 
         // Generate PDF token
         $pdfToken = \Str::random(32);
