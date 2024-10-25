@@ -17,7 +17,7 @@ class ResourceController extends Controller
     public function index(): JsonResponse
     {
         // Charger les ressources avec leurs relations 'semester' et 'users'
-        $resources = Resource::with(['semester', 'users'])->get();
+        $resources = Resource::with(['semester'])->get();
 
         return response()->json($resources);
     }

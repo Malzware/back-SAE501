@@ -34,7 +34,7 @@ Route::prefix('users')->group(function () {
 Route::get('/given-hours', [GivenHoursController::class, 'index']); // Afficher toutes les heures données
 Route::post('/given-hours', [GivenHoursController::class, 'store']); // Créer une nouvelle entrée d'heures données
 Route::get('/given-hours/{id}', [GivenHoursController::class, 'show']); // Afficher une entrée d'heures données spécifique
-Route::put('/given-hours/{id}', [GivenHoursController::class, 'update']); // Mettre à jour une entrée d'heures données
+Route::put('/given-hours/{id}', [GivenHoursController::class, 'update']); // Mettre à jour une entrée d'heures données spécifique
 Route::delete('/given-hours/{id}', [GivenHoursController::class, 'destroy']); // Supprimer une entrée d'heures données
 
 Route::get('/semesters', [SemesterController::class, 'index']); // Afficher tous les semestres
