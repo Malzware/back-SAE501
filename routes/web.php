@@ -82,6 +82,6 @@ Route::post('send-signature', [SignatureController::class, 'sendSignature'])->na
 
 Route::prefix('api')->group(function () {
     Route::post('/generate-preview-url', [PreviewController::class, 'generatePreviewUrl']);
-    Route::get('/preview-pdf/{payload}', [PreviewController::class, 'generatePreviewPdf']);
+    Route::get('/preview-pdf/{payload}', [PreviewController::class, 'getPreviewPdf']);
     Route::post('/save-signed-pdf', [PreviewController::class, 'saveSignedPdf']);
 });
