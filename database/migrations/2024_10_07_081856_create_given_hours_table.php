@@ -15,8 +15,8 @@ class CreateGivenHoursTable extends Migration
     {
         Schema::create('given_hours', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('resource_id')->constrained('resources');
-            $table->foreignId('user_id');
+            $table->foreignId('resource_id')->constrained('resources')->onDelete('cascade'); // Lien avec resources
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Lien avec users
             $table->integer('hours_cm')->nullable();
             $table->integer('hours_td')->nullable();
             $table->integer('hours_tp')->nullable();

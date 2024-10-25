@@ -15,4 +15,10 @@ class GivenHour extends Model
     {
         return $this->belongsTo(Resource::class);
     }
+
+    // Relation avec User
+    public function user()  // Correction de la relation avec User
+    {
+        return $this->belongsTo(User::class);
+    }
 }
