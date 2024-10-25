@@ -1,182 +1,160 @@
-<!-- resources/views/recruitment.blade.php -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruitment Form</title>
     <style>
-        @page {
-            size: A4;
-            margin: 20mm;
-        }
-
         body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .container {
-            width: 100%;
-            margin: 0;
-            padding: 0;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
 
-        .header-left {
-            width: 50%;
-        }
-
-        .header-left img {
+        .logo {
             width: 100px;
         }
 
-        .header-right {
-            text-align: right;
-            font-size: 11px;
+        .year-box {
+            border: 1px solid black;
+            padding: 5px 15px;
+            text-align: center;
+            margin: 0 auto;
         }
 
         .title {
             text-align: center;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .title h1 {
-            font-size: 16px;
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .title h2 {
+            border: 1px solid black;
+            padding: 10px;
+            margin: 20px 0;
             font-size: 14px;
-            margin: 5px 0;
         }
 
-        .title p {
-            font-size: 12px;
-        }
-
-        .section {
-            margin-bottom: 15px;
-        }
-
-        .section label {
-            font-weight: bold;
-            width: 220px;
-            display: inline-block;
-        }
-
-        .section .value {
-            font-weight: bold;
+        .department-section {
+            margin: 20px 0;
         }
 
         .checkbox-group {
-            display: inline-block;
-            margin-right: 10px;
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .candidature-box {
+            border: 1px solid black;
+            text-align: center;
+            padding: 5px;
+            margin: 20px 0;
+            background-color: #f0f0f0;
+        }
+
+        .form-row {
+            margin: 10px 0;
+            display: flex;
+            gap: 20px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin: 20px 0;
         }
 
         th, td {
             border: 1px solid black;
             padding: 8px;
+            text-align: left;
+        }
+
+        .module-col {
+            width: 60%;
+        }
+
+        .hours-col {
+            width: 13%;
             text-align: center;
-            font-size: 12px;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .signature-section td {
-            height: 60px;
         }
 
         .signature-section {
+            display: flex;
+            justify-content: space-between;
             margin-top: 20px;
         }
 
-        .footer {
-            font-size: 10px;
-            text-align: center;
-            margin-top: 10px;
+        .signature-box {
+            width: 30%;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
     <div class="header">
-        <div class="header-left">
-            <img src="{{ asset('iut-logo.png') }}" alt="IUT Béziers">
+        <img src="/api/placeholder/100/50" alt="IUT Logo" class="logo">
+        <div class="year-box">
+            <h2>Année Universitaire 2024/2025</h2>
         </div>
-        <div class="header-right">
-            <p>Place du 14 Juillet – BP 50438<br>
-            34505 BÉZIERS<br>
-            Service financier: 04 67 11 60 14</p>
-        </div>
+        <img src="/api/placeholder/100/50" alt="University Logo" class="logo">
     </div>
 
     <div class="title">
-        <h1>Proposition de Recrutement aux Fonctions de Charges de Cours</h1>
-        <h2>Année Universitaire 2024/2025</h2>
-        <p>Document à retourner par mail à: <strong>iut-ose-service@umontpellier.fr</strong></p>
+        PROPOSITION DE RECRUTEMENT AUX FONCTIONS DE CHARGES DE COURS<br>
+        POUR AVIS DU CONSEIL EN FORMATION RESTREINTE<br>
+        <small>(document à retourner par mail à : iutb-cse-service@umontpellier.fr)</small>
     </div>
 
-    <div class="section">
-        <label for="department">Département d'Enseignement :</label>
-        <span class="checkbox-group">RT ☐ MMI ☐ TC ☐ LP ROB & IA ☐</span>
+    <div class="department-section">
+        <div>DÉPARTEMENT D'ENSEIGNEMENT :</div>
+        <div class="checkbox-group">
+            <label class="checkbox-item">
+                <input type="checkbox"> RT
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" checked> MMI
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox"> TC
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox"> LP ROB & IA
+            </label>
+        </div>
     </div>
 
-    <div class="section">
-        <label for="module-responsible">Nom de l'enseignant responsable du module :</label>
-        <span class="value">Caroline Surribas</span>
+    <div class="candidature-box">
+        PROPOSITION DE CANDIDATURE VACATAIRE
     </div>
 
-    <div class="section">
-        <label for="candidate-name">Nom :</label>
-        <span class="value">{{ $user->lastname }}</span>
-        <label for="candidate-prenom" style="margin-left: 30px;">Prénom :</label>
-        <span class="value">{{ $user->firstname }}</span>
-    </div>
-
-    <div class="section">
-        <label for="diploma">Dernier diplôme obtenu :</label>
-        <span></span>
-    </div>
-
-    <div class="section">
-        <label for="address">Adresse mail :</label>
-        <span>{{ $user->email }}</span>
-        <label for="telephone" style="margin-left: 30px;">Téléphone :</label>
-        <span></span>
-    </div>
-    
-    <div class="section">
-        <label for="start-date">Date de début des cours :</label>
-        <span></span>
+    <div class="form-row">
+        <div>
+            <label>NOM :</label>
+            <label for="candidate-name">Nom :</label>
+            <span class="value">{{ $user->lastname }}</span>
+        </div>
+        <div>
+            <label>PRÉNOM :</label>
+            <span class="value">{{ $user->firstname }}</span>
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>N° Module</th>
-                <th>Nom du Module</th>
-                <th>Volume Horaire</th>
+                <th class="module-col">NOM DU MODULE</th>
+                <th class="hours-col">CM</th>
+                <th class="hours-col">TD</th>
+                <th class="hours-col">TP</th>
             </tr>
         </thead>
         <tbody>
@@ -191,20 +169,21 @@
     </table>
 
     <div class="signature-section">
-        <table>
-            <tr>
-                <td>Date: {{ $generated_at->format('d-m-Y') }}</td>
-                <td>Visa du Responsable de Module:</td>
-                <td>Visa de l’intéressé:</td>
-                <td>Visa du Chef de Département:</td>
-            </tr>
-        </table>
+        <div class="signature-box">
+            <div>Date : {{ $generated_at->format('Y-m-d H:i:s') }}</div>
+            <div>Visa du Responsable de module,</div>
+            <div>de la formation ou directeur des Études</div>
+        </div>
+        <div class="signature-box">
+            <div>Date : {{ $generated_at->format('Y-m-d H:i:s') }}</div>
+            <div>Visa de l'intéressé
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($signaturePath)) }}" class="signature-image">
+            </div>
+        </div>
+        <div class="signature-box">
+            <div>Date : {{ $generated_at->format('Y-m-d H:i:s') }}</div>
+            <div>Visa du chef de département</div>
+        </div>
     </div>
-
-    <div class="footer">
-        <p>IUT Béziers, Université de Montpellier</p>
-    </div>
-</div>
-
 </body>
 </html>

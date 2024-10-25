@@ -3,26 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Generate Preview URL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .preview-url {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+    </style>
 </head>
 
-  <style>
-       body {
-        background-color: gray;
-       }
-       .signature-pad {
-            border: 1px solid #ccc;
-            margin: 10px 0;
-        }
-        canvas {
-            width: 400px;
-            height: 200px;
-        }
-  </style>
-
-<body>
-
-@if(session('success'))
+<!-- @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
     </div>
@@ -47,7 +92,7 @@
     }
     ?>
 
-    <!-- <div>
+    <div>
     <form action="/pdf" method="POST">
     @csrf
     <div>
@@ -58,10 +103,10 @@
             @enderror
         </div>
     </form>
-</div> -->
+</div>
 
-       <div>
-       <form method="POST" action="{{ route('send.signature') }}">
+    <div>
+    <form method="POST" action="{{ route('send.signature') }}">
     @csrf
     <div>
             <label for="email">Email:</label>
@@ -74,7 +119,7 @@
         <label>Signature</label>
         <div class="signature-pad">
             <canvas></canvas>
-            <!-- Add this hidden input -->
+            Add this hidden input
             <input type="hidden" name="signature" id="signature">
         </div>
         <div id="signature-pad_footer">
@@ -114,4 +159,50 @@
         }
     });
 </script>
+</html> -->
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <h2>Generate Preview URL</h2>
+    
+    <form method="POST" action="{{ route('generate.preview.url') }}">
+        @csrf
+        <div class="form-group">
+            <label for="email">User Email:</label>
+            <input type="email" id="email" name="email" required>
+            @error('email')
+                <span style="color: red;">{{ $message }}</span>
+            @enderror
+        </div>
+        <button type="submit" class="btn">Generate URL</button>
+    </form>
+
+    @if(isset($previewUrl))
+        <div class="preview-url">
+            <strong>Preview URL:</strong>
+            <p>{{ $previewUrl }}</p>
+            <button onclick="copyToClipboard('{{ $previewUrl }}')" class="btn">Copy URL</button>
+        </div>
+    @endif
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('URL copied to clipboard!');
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+        }
+    </script>
+</body>
 </html>
