@@ -12,13 +12,12 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        // Créer 10 utilisateurs
         for ($i = 0; $i < 10; $i++) {
             User::create([
-                'name' => $faker->name(),
+                'firstname' => $faker->firstName(),
+                'lastname' => $faker->lastName(),
                 'email' => $faker->unique()->safeEmail(),
-                'password' => bcrypt('password'), // Assurez-vous de crypter le mot de passe
-                'email_verified_at' => now(),
+                'password' => bcrypt('password'), // Utiliser un mot de passe par défaut
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

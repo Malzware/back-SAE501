@@ -22,6 +22,9 @@ class CreateGivenHoursTable extends Migration
             $table->integer('hours_tp')->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
+
+            $table->foreign('resource_id')->references('id')->on('resources')->onDelete('cascade');
+
         });
     }
 
@@ -35,4 +38,3 @@ class CreateGivenHoursTable extends Migration
         Schema::dropIfExists('given_hours');
     }
 }
-

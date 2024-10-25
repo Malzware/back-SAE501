@@ -25,4 +25,11 @@ class Resource extends Model
     {
         return $this->belongsToMany(User::class, 'role_user');
     }
+
+    // Ajoutez cette méthode pour récupérer les RoleUser associés à cette ressource
+    public function roleUsers()
+    {
+        return $this->hasMany(RoleUser::class, 'resource_id');
+    }
 }
+

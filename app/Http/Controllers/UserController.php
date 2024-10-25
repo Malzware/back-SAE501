@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -28,14 +29,16 @@ class UserController extends Controller
     {
         // Valider les données
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
         // Créer un nouvel utilisateur
         $user = User::create([
-            'name' => $validatedData['name'],
+            'firstname' => $validatedData['firstname'],
+            'lastname' => $validatedData['lastname'],
             'email' => $validatedData['email'],
             'password' => bcrypt($validatedData['password']),
         ]);
@@ -71,7 +74,8 @@ class UserController extends Controller
     {
         // Valider les données
         $validatedData = $request->validate([
-            'name' => 'sometimes|string|max:255',
+            'firstname' => 'sometimes|string|max:255',
+            'lastname' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
             'password' => 'sometimes|string|min:8',
         ]);
@@ -80,6 +84,9 @@ class UserController extends Controller
 
         if ($user) {
             // Mettre à jour les informations de l'utilisateur
+            if (isset($validatedData['password'])) {
+                $validatedData['password'] = bcrypt($validatedData['password']);
+            }
             $user->update($validatedData);
             return response()->json($user);
         } else {
@@ -103,5 +110,16 @@ class UserController extends Controller
         } else {
             return response()->json(['message' => 'Utilisateur non trouvé'], 404);
         }
+    }
+    public function getUserInfo(Request $request)
+    {
+        $user = Auth::user(); // ou une autre méthode pour obtenir l'utilisateur
+        if ($user) {
+            return $user;
+        } else {
+            // Gérer le cas où l'utilisateur est null
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
     }
 }
